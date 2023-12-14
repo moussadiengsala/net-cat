@@ -9,7 +9,7 @@ import (
 // For displaying The pinguin logo.
 func NewUserUI(conn net.Conn) {
 	// to notice the server a new connection
-	fmt.Println("A new user connected")
+	fmt.Println("🧑 A new user connected")
 
 	pinguinDraw, _ := os.ReadFile("pinguin.txt")
 	conn.Write([]byte("Welcome to TCP-Chat!"))

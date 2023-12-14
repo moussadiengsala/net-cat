@@ -27,7 +27,7 @@ from a specific user and send it to all users
 func (currentUser User) BroadcastChat(users *Users) {
 
 	currentTime := time.Now().Format("2006-01-02 15:04:05")
-	var message = fmt.Sprintf("[%s][%s]: %s\n", currentTime, currentUser.Name, currentUser.Message)
+	var message = fmt.Sprintf("[%s][%s]: %s", currentTime, currentUser.Name, currentUser.Message)
 	utils.MessageLogger(message[:len(message)-1], os.O_APPEND|os.O_WRONLY)
 
 	for _, user := range users.Clients {
@@ -67,8 +67,7 @@ func (user User) logOut(users *Users, out chan struct{}) {
 }
 
 /*
-	 Here we noticed all active users that there is a new
-		user who joined the chat
+	Here we noticed all active users the activities that happen in the room
 */
 func UserActivitiesNotifications(client User, clients map[string]User, message string) {
 	for _, value := range clients {

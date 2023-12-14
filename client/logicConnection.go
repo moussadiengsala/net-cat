@@ -19,39 +19,40 @@ func New(listen net.Listener) {
 		if err != nil {
 			break
 		}
-
+		
 		if len(connections) == cap(connections) {
-			conn.Write([]byte("This chat is full press Enter to exit..."))
+			conn.Write([]byte("🗄️ This chat is full press Enter to exit..."))
 			conn.Close()
-		} else {
-			defer close(connections)
-			connections <- struct{}{}
-
-			go func() {
-				// Displaying The pinguin logo.
-				utils.NewUserUI(conn)
-
-				// keep asking the current user his name until he put something.
-				var username string = utils.GetUsername(conn)
-
-				// Here we have to assign the current user a unique id based on the identity on the server.
-				var id = regexp.MustCompile(`\.|:`).ReplaceAllString(conn.RemoteAddr().String(), "")
-				var newClient = User{Id: id, Connection: conn, Name: username}
-
-				/* Before adding the new user on our list of users we noticed all active users that there is a new
-				user who joined the chat
-				*/
-				UserActivitiesNotifications(newClient, users.Clients, "has joined our chat...")
-
-				users.Clients[newClient.Id] = newClient
-
-				/* display the previous broadcasted
-				messages from the channel before he logged in
-				*/
-				newClient.GetPreviousMessages()
-				go HandleConn(conn, newClient, &users, connections)
-			}()
 		}
+
+		defer close(connections)
+		connections <- struct{}{}
+
+		go func() {
+			// Displaying The pinguin logo.
+			utils.NewUserUI(conn)
+
+			// keep asking the current user his name until he put something.
+			var username string = utils.GetUsername(conn)
+
+			// Here we have to assign the current user a unique id based on the identity on the server.
+			var id = regexp.MustCompile(`\.|:`).ReplaceAllString(conn.RemoteAddr().String(), "")
+			var newClient = User{Id: id, Connection: conn, Name: username}
+
+			/* Before adding the new user on our list of users we noticed all active users that there is a new
+			user who joined the chat
+			*/
+			UserActivitiesNotifications(newClient, users.Clients, "has joined our chat...")
+
+			users.Clients[newClient.Id] = newClient
+
+			/* display the previous broadcasted
+			messages from the channel before he logged in
+			*/
+			newClient.GetPreviousMessages()
+			go HandleConn(conn, newClient, &users, connections)
+		}()
+
 	}
 }
 
